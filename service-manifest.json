@@ -14,7 +14,7 @@
         },
         {
           "key": "START_PATH",
-          "value": "/absolute/path/to/start"
+          "value": "/Users/bene/work"
         }
       ]
     },
@@ -137,7 +137,7 @@
               },
               {
                 "key": "START_PATH",
-                "value": "/absolute/path/to/start"
+                "value": "/Users/bene/work"
               }
             ]
           }
