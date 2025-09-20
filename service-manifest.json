@@ -23,7 +23,7 @@
         { "key": "PORT", "value": "8300" },
         { "key": "OPENAI_API_KEY", "value": "replace-me" },
         { "key": "OPENAI_BASE_URL", "value": "https://api.openai.com/v1" },
-        { "key": "OLLAMA_BASE_URL", "value": "http://127.0.0.1:11434" }
+        { "key": "OLLAMA_BASE_URL", "value": "http://host.docker.internal:11434" }
       ]
     },
     {
@@ -90,7 +90,7 @@
               { "key": "PORT", "value": "8300" },
               { "key": "OPENAI_API_KEY", "value": "replace-me" },
               { "key": "OPENAI_BASE_URL", "value": "https://api.openai.com/v1" },
-              { "key": "OLLAMA_BASE_URL", "value": "http://127.0.0.1:11434" }
+              { "key": "OLLAMA_BASE_URL", "value": "http://host.docker.internal:11434" }
             ]
           }
         },
