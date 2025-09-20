@@ -55,7 +55,7 @@
       "id": "three-service-network",
       "name": "Three Service Network",
       "description": "Example network wiring Better File Explorer, AI Connector, and Tagging Service together.",
-      "repoUrl": "https://github.com/your-org/three-service-network.git",
+      "repoUrl": "https://github.com/benediktbwimmer/three-service-network.git",
       "dockerfilePath": "Dockerfile",
       "env": [
         { "key": "NETWORK_MODE", "value": "demo" }
