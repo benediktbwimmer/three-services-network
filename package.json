@@ -1,0 +1,9 @@
+{
+  "name": "three-service-network",
+  "version": "0.0.1",
+  "description": "Example service network manifest combining Better File Explorer, AI Connector, and Tagging Service.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

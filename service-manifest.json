@@ -1,0 +1,141 @@
+{
+  "services": [
+    {
+      "slug": "better-fileexplorer",
+      "displayName": "Better File Explorer",
+      "kind": "file-system",
+      "baseUrl": "http://127.0.0.1:4174",
+      "healthEndpoint": "/api/tree",
+      "openapiPath": "/openapi.yaml",
+      "env": [
+        { "key": "PORT", "value": "4174" },
+        { "key": "START_PATH", "value": "/absolute/path/to/start" }
+      ]
+    },
+    {
+      "slug": "ai-connector",
+      "displayName": "AI Connector",
+      "kind": "ai-connector",
+      "baseUrl": "http://127.0.0.1:8300",
+      "healthEndpoint": "/healthz",
+      "openapiPath": "/openapi.json",
+      "env": [
+        { "key": "PORT", "value": "8300" },
+        { "key": "OPENAI_API_KEY", "value": "replace-me" },
+        { "key": "OPENAI_BASE_URL", "value": "https://api.openai.com/v1" },
+        { "key": "OLLAMA_BASE_URL", "value": "http://127.0.0.1:11434" }
+      ]
+    },
+    {
+      "slug": "tagging-service",
+      "displayName": "Tagging Service",
+      "kind": "file-tagging",
+      "baseUrl": "http://127.0.0.1:5103",
+      "healthEndpoint": "/healthz",
+      "openapiPath": "/openapi.json",
+      "env": [
+        { "key": "PORT", "value": "5103" },
+        { "key": "REDIS_URL", "value": "redis://127.0.0.1:6379" },
+        { "key": "REDIS_EVENTS_CHANNEL", "value": "apphub:events" },
+        { "key": "CATALOG_BASE_URL", "value": "http://127.0.0.1:4000" },
+        { "key": "CATALOG_TOKEN", "value": "changeme" },
+        { "key": "FILE_EXPLORER_BASE_URL", "value": "http://127.0.0.1:4174" },
+        { "key": "FILE_EXPLORER_TOKEN", "value": "" },
+        { "key": "AI_CONNECTOR_BASE_URL", "value": "http://127.0.0.1:8300" },
+        { "key": "AI_CONNECTOR_MODEL", "value": "gpt-4o-mini" },
+        { "key": "WORKSPACE_ROOT", "value": "./workspace" },
+        { "key": "TAGGING_CONCURRENCY", "value": "2" },
+        { "key": "TAGGING_PROMPT_TEMPLATE_PATH", "value": "templates/default_prompt.md" },
+        { "key": "WEBHOOK_URL", "value": "" }
+      ]
+    }
+  ],
+  "networks": [
+    {
+      "id": "three-service-network",
+      "name": "Three Service Network",
+      "description": "Example network wiring Better File Explorer, AI Connector, and Tagging Service together.",
+      "repoUrl": "https://github.com/your-org/three-service-network.git",
+      "dockerfilePath": "Dockerfile",
+      "env": [
+        { "key": "NETWORK_MODE", "value": "demo" }
+      ],
+      "services": [
+        {
+          "serviceSlug": "better-fileexplorer",
+          "launchOrder": 0,
+          "app": {
+            "id": "better-fileexplorer-service",
+            "name": "Better File Explorer",
+            "description": "Static file explorer UI.",
+            "repoUrl": "https://github.com/benediktbwimmer/better-fileexplorer.git",
+            "dockerfilePath": "Dockerfile",
+            "launchEnv": [
+              { "key": "PORT", "value": "4174" },
+              { "key": "START_PATH", "value": "/absolute/path/to/start" }
+            ]
+          }
+        },
+        {
+          "serviceSlug": "ai-connector",
+          "launchOrder": 1,
+          "dependsOn": ["better-fileexplorer-service"],
+          "app": {
+            "id": "ai-connector-service",
+            "name": "AI Connector",
+            "description": "API gateway for AI completions.",
+            "repoUrl": "https://github.com/benediktbwimmer/ai-connector.git",
+            "dockerfilePath": "Dockerfile",
+            "launchEnv": [
+              { "key": "PORT", "value": "8300" },
+              { "key": "OPENAI_API_KEY", "value": "replace-me" },
+              { "key": "OPENAI_BASE_URL", "value": "https://api.openai.com/v1" },
+              { "key": "OLLAMA_BASE_URL", "value": "http://127.0.0.1:11434" }
+            ]
+          }
+        },
+        {
+          "serviceSlug": "tagging-service",
+          "launchOrder": 2,
+          "dependsOn": ["better-fileexplorer-service", "ai-connector-service"],
+          "app": {
+            "id": "tagging-service-app",
+            "name": "Tagging Service",
+            "description": "File tagging pipeline.",
+            "repoUrl": "https://github.com/benediktbwimmer/tagging-service.git",
+            "dockerfilePath": "Dockerfile",
+            "launchEnv": [
+              { "key": "PORT", "value": "5103" },
+              { "key": "REDIS_URL", "value": "redis://127.0.0.1:6379" },
+              { "key": "REDIS_EVENTS_CHANNEL", "value": "apphub:events" },
+              { "key": "CATALOG_BASE_URL", "value": "http://127.0.0.1:4000" },
+              { "key": "CATALOG_TOKEN", "value": "changeme" },
+              {
+                "key": "FILE_EXPLORER_BASE_URL",
+                "fromService": {
+                  "service": "better-fileexplorer-service",
+                  "property": "baseUrl",
+                  "fallback": "http://127.0.0.1:4174"
+                }
+              },
+              { "key": "FILE_EXPLORER_TOKEN", "value": "" },
+              {
+                "key": "AI_CONNECTOR_BASE_URL",
+                "fromService": {
+                  "service": "ai-connector-service",
+                  "property": "baseUrl",
+                  "fallback": "http://127.0.0.1:8300"
+                }
+              },
+              { "key": "AI_CONNECTOR_MODEL", "value": "gpt-4o-mini" },
+              { "key": "WORKSPACE_ROOT", "value": "./workspace" },
+              { "key": "TAGGING_CONCURRENCY", "value": "2" },
+              { "key": "TAGGING_PROMPT_TEMPLATE_PATH", "value": "templates/default_prompt.md" },
+              { "key": "WEBHOOK_URL", "value": "" }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
